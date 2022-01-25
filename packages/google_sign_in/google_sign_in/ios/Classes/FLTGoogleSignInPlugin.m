@@ -264,7 +264,7 @@ static FlutterError *getFlutterError(NSError *error) {
 #pragma mark - private methods
 
 - (void)respondWithAccount:(NSDictionary<NSString *, id> *)account error:(NSError *)error {
-  FlutterResult result = _accountRequest;
+  static FlutterResult result = _accountRequest;
   _accountRequest = nil;
   result(error != nil ? getFlutterError(error) : account);
 }
