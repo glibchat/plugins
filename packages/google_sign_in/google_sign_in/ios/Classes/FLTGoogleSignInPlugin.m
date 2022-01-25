@@ -19,6 +19,7 @@ static NSString *const kErrorReasonSignInRequired = @"sign_in_required";
 static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
 static NSString *const kErrorReasonNetworkError = @"network_error";
 static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
+static FlutterResult AccountRequest;
 
 static FlutterError *getFlutterError(NSError *error) {
   NSString *errorCode;
@@ -44,7 +45,7 @@ static FlutterError *getFlutterError(NSError *error) {
 @end
 
 @implementation FLTGoogleSignInPlugin {
-  FlutterResult _accountRequest;
+  // FlutterResult _accountRequest;
   NSArray<NSString *> *_additionalScopesRequest;
 }
 
@@ -187,13 +188,15 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 - (BOOL)setAccountRequest:(FlutterResult)request {
-  if (_accountRequest != nil) {
+  // if (_accountRequest != nil) {
+    if (AccountRequest != nil) {
     request([FlutterError errorWithCode:@"concurrent-requests"
                                 message:@"Concurrent requests to account signin"
                                 details:nil]);
     return NO;
   }
-  _accountRequest = request;
+  // _accountRequest = request;
+  AccountRequest = request;
   return YES;
 }
 
@@ -232,8 +235,10 @@ static FlutterError *getFlutterError(NSError *error) {
           break;
         }
       }
-      _accountRequest(@(granted));
-      _accountRequest = nil;
+      // _accountRequest(@(granted));
+      // _accountRequest = nil;
+      AccountRequest(@(granted));
+      AccountRequest = nil;
       _additionalScopesRequest = nil;
       return;
     } else {
@@ -264,8 +269,10 @@ static FlutterError *getFlutterError(NSError *error) {
 #pragma mark - private methods
 
 - (void)respondWithAccount:(NSDictionary<NSString *, id> *)account error:(NSError *)error {
-  static FlutterResult result = _accountRequest;
-  _accountRequest = nil;
+//  FlutterResult result = _accountRequest;
+  // _accountRequest = nil;
+  FlutterResult result = AccountRequest;
+  AccountRequest = nil;
   result(error != nil ? getFlutterError(error) : account);
 }
 
